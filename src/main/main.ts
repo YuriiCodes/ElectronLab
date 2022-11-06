@@ -31,6 +31,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
+ipcMain.on('xml-uploaded', async (event, arg) => {
+  const msgTemplate = (file: string) => `xml file uploaded: ${file}`;
+  console.log(msgTemplate(arg));
+  event.reply('xml-uploaded', msgTemplate('pong'));
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

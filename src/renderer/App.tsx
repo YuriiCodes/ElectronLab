@@ -1,40 +1,15 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
-import './App.css';
+  import {MemoryRouter as Router, Routes, Route, Link} from 'react-router-dom';
 
-const Hello = () => {
+import './App.css';
+import './App.global.css';
+  import {LoadFile} from "./components/LoadFile";
+const StartPage = () => {
   return (
-    <div>
-      <div className="Hello">
-        <img width="200" alt="icon" src={icon} />
-      </div>
-      <h1>electron-react-boilerplate</h1>
-      <div className="Hello">
-        <a
-          href="https://electron-react-boilerplate.js.org/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="books">
-              📚
-            </span>
-            Read our docs
-          </button>
-        </a>
-        <a
-          href="https://github.com/sponsors/electron-react-boilerplate"
-          target="_blank"
-          rel="noreferrer"
-        >
-          <button type="button">
-            <span role="img" aria-label="folded hands">
-              🙏
-            </span>
-            Donate
-          </button>
-        </a>
-      </div>
+    <div className="container h-100">
+      <h1 className="text-white">Lab</h1>
+      <p className="text-white">Greetings! This app will help you convert .XML to .HTML file!</p>
+      <p className="text-white">To start, just click the button below:</p>
+      <button type="button" className="btn btn-primary"><Link to="/loadFile" className="text-white text-decoration-none">Load XML</Link></button>
     </div>
   );
 };
@@ -43,7 +18,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route path="/" element={<StartPage />} />
+        <Route path="/loadFile" element={<LoadFile />} />
       </Routes>
     </Router>
   );
