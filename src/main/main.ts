@@ -14,6 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+const fs = require('fs/promises');
+
 
 class AppUpdater {
   constructor() {
@@ -34,6 +36,13 @@ ipcMain.on('ipc-example', async (event, arg) => {
 ipcMain.on('xml-uploaded', async (event, arg) => {
   const msgTemplate = (file: string) => `xml file uploaded: ${file}`;
   console.log(msgTemplate(arg));
+
+  try {
+    const data = await fs.readFile(arg[0], { encoding: 'utf8' });
+    console.log(data);
+  } catch (err) {
+    console.log(err);
+  }
   event.reply('xml-uploaded', msgTemplate('pong'));
 });
 

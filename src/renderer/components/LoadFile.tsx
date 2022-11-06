@@ -1,12 +1,28 @@
+import {useRef} from "react";
+
 export const LoadFile = () => {
-  window.electron.ipcRenderer.sendMessage('xml-uploaded', ["hello"]);
+  const fileInputRef = useRef();
   return (
     <div className="container">
       <h1 className="text-white">File load</h1>
-      <form>
+      <form onSubmit={ (e) => {
+        e.preventDefault();
+        console.log(e.target);
+
+        // @ts-ignore
+        const selectedFilePath = fileInputRef.current.files[0].path;
+        window.electron.ipcRenderer.sendMessage('xml-uploaded', [selectedFilePath]);
+        debugger;
+        alert(
+          // @ts-ignore
+          `Selected file - ${fileInputRef.current.files[0].name}`
+
+        );
+      }}>
         <div className="mb-3">
           <label htmlFor="formFile" className="form-label text-white">Please, select the XML file:</label>
-          <input className="form-control" type="file" accept="text/xml" id="formFile" />
+          {/*// @ts-ignore*/}
+          <input className="form-control" type="file" accept="text/xml" id="formFile" ref={fileInputRef}/>
         </div>
         <button type="submit" className="btn btn-primary">Submit</button>
       </form>
