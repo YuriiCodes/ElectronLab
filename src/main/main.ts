@@ -9,11 +9,13 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
-import { autoUpdater } from 'electron-updater';
+import {app, BrowserWindow, shell, ipcMain} from 'electron';
+import {autoUpdater} from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
+import {resolveHtmlPath} from './util';
+import {XmlParserClass} from "./xmlParserClass";
+
 const fs = require('fs/promises');
 
 
@@ -36,13 +38,26 @@ ipcMain.on('ipc-example', async (event, arg) => {
 ipcMain.on('xml-uploaded', async (event, arg) => {
   const msgTemplate = (file: string) => `xml file uploaded: ${file}`;
   console.log(msgTemplate(arg));
-
+  let data;
   try {
-    const data = await fs.readFile(arg[0], { encoding: 'utf8' });
+     data = await fs.readFile(arg[0], {encoding: 'utf8'});
     console.log(data);
   } catch (err) {
     console.log(err);
   }
+  let parser:XmlParserClass = XmlParserClass.getInstance();
+
+  // Uncode the code below to perform singleton test.
+  // It will output "Singleton works, both variables contain the same instance".
+
+  /*let parser2:XmlParserClass = XmlParserClass.getInstance();
+  if (parser === parser2) {
+    console.log('Singleton works, both variables contain the same instance.');
+  } else {
+    console.log('Singleton failed, variables contain different instances.');
+  }*/
+  let jsonObj = parser.parse(data);
+  console.log(jsonObj)
   event.reply('xml-uploaded', msgTemplate('pong'));
 });
 
@@ -119,7 +134,7 @@ const createWindow = async () => {
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
-    return { action: 'deny' };
+    return {action: 'deny'};
   });
 
   // Remove this if your app does not use auto updates
