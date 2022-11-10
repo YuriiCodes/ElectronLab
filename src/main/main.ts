@@ -15,6 +15,8 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import {resolveHtmlPath} from './util';
 import {XmlParserClass} from "./xmlParserClass";
+import util from "util";
+
 
 const fs = require('fs/promises');
 
@@ -57,8 +59,8 @@ ipcMain.on('xml-uploaded', async (event, arg) => {
     console.log('Singleton failed, variables contain different instances.');
   }*/
   let jsonObj = parser.parse(data);
-  console.log(jsonObj)
-  event.reply('xml-uploaded', msgTemplate('pong'));
+  console.log(util.inspect(jsonObj, {showHidden: false, depth: null, colors: true}))
+  event.sender.send("json-ready", jsonObj);
 });
 
 if (process.env.NODE_ENV === 'production') {
