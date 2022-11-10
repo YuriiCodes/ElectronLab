@@ -25,8 +25,17 @@ interface Props{
 }
 interface State{
   nameSearch: string,
-  jsonSearchRes: any,
   departmentSearch: string,
+  branchSearch: string,
+  chairSearch: string,
+  daySearch: string,
+  timeSearch: string,
+  headmanSearch: string,
+  courseSearch: string,
+  subjectSearch: string,
+  leaderSearch: string,
+  jsonSearchRes: any,
+
 }
 
 export class LoadFile extends Component<Props, State>  {
@@ -53,14 +62,6 @@ export class LoadFile extends Component<Props, State>  {
 };
 
 
-  private handleJsonSearch = (fieldName: keyof GroupInfo) => {
-    // iterate over the json and find the needed info, search can be performed by name, department, branch, chair, day, time, headman, course, subject, leader
-    // Then set the  resulting object to jsonSearchRes
-    let res = {}
-    const searchResult = this.props.json.scientistpersonnel.group.filter(group => group[fieldName] === this.state.nameSearch);
-    this.setState({jsonSearchRes: searchResult})
-
-  }
   private searchGroupsByKeyValue(key: keyof GroupInfo, value: string) {
     let result:any[] = [];
     // perform substring search for every group in data.scientistpersonnel.group.
@@ -83,6 +84,14 @@ export class LoadFile extends Component<Props, State>  {
     this.state = {
       nameSearch: '',
       departmentSearch: '',
+      branchSearch: '',
+      chairSearch: '',
+      daySearch: '',
+      timeSearch: '',
+      headmanSearch: '',
+      courseSearch: '',
+      subjectSearch: '',
+      leaderSearch: '',
       jsonSearchRes: {},
     }
   }
@@ -141,7 +150,70 @@ export class LoadFile extends Component<Props, State>  {
                   this.searchGroupsByKeyValue('department' , this.state.departmentSearch);
                 }}/>
               </div>
-              <button type="submit" className="btn btn-primary">Submit</button>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputBranch" aria-describedby="branchHelp"
+                       placeholder="Enter branch" value={this.state.branchSearch} onChange={e => {
+                  this.setState({branchSearch: e.target.value})
+                  this.searchGroupsByKeyValue('branch' , this.state.branchSearch);
+                }}/>
+              </div>
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputChair" aria-describedby="chairHelp"
+                       placeholder="Enter chair" value={this.state.chairSearch} onChange={e => {
+                  this.setState({chairSearch: e.target.value})
+                  this.searchGroupsByKeyValue('chair' , this.state.chairSearch);
+                }}/>
+              </div>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputDay" aria-describedby="dayHelp"
+                       placeholder="Enter day" value={this.state.daySearch} onChange={e => {
+                  this.setState({daySearch: e.target.value})
+                  this.searchGroupsByKeyValue('day' , this.state.daySearch);
+                }}/>
+              </div>
+
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputTime" aria-describedby="timeHelp"
+                       placeholder="Enter time" value={this.state.timeSearch} onChange={e => {
+                  this.setState({timeSearch: e.target.value})
+                  this.searchGroupsByKeyValue("time", this.state.timeSearch);
+                }}/>
+              </div>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputHeadman" aria-describedby="headmenHelp"
+                       placeholder="Enter headman" value={this.state.headmanSearch} onChange={e => {
+                  this.setState({headmanSearch: e.target.value})
+                  this.searchGroupsByKeyValue("headman", this.state.headmanSearch);
+                }}/>
+              </div>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputCourse" aria-describedby="courseHelp"
+                       placeholder="Enter course" value={this.state.courseSearch} onChange={e => {
+                  this.setState({courseSearch: e.target.value})
+                  this.searchGroupsByKeyValue("course", this.state.courseSearch);
+                }}/>
+              </div>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputSubject" aria-describedby="subjectHelp"
+                       placeholder="Enter subject" value={this.state.subjectSearch} onChange={e => {
+                  this.setState({subjectSearch: e.target.value})
+                  this.searchGroupsByKeyValue("subject", this.state.subjectSearch);
+                }}/>
+              </div>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputLeader" aria-describedby="leaderHelp"
+                       placeholder="Enter leader" value={this.state.leaderSearch} onChange={e => {
+                  this.setState({leaderSearch: e.target.value})
+                  this.searchGroupsByKeyValue("leader", this.state.leaderSearch);
+                }}/>
+              </div>
             </form>
           </div>
           <div className={"col-8"}>
