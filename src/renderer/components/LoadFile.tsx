@@ -3,7 +3,31 @@ import { JSONTree } from 'react-json-tree';
 
 
 
-export class LoadFile extends Component {
+type GroupInfo = {
+  name: string,
+  department: string,
+  branch: string,
+  chair: string,
+  day: string,
+  time: string,
+  headman: string,
+  course: string,
+  subject: string,
+  leader: string,
+}
+type JsonTreeProps = {
+  scientistpersonnel: {
+    group: GroupInfo[]
+  }
+}
+interface Props{
+  json: JsonTreeProps
+  isJsonLoaded: boolean
+}
+interface State{
+}
+
+export class LoadFile extends Component<Props, State>  {
   private readonly fileInputRef: React.RefObject<unknown>;
   private readonly  theme  = {
   scheme: 'apathy',
@@ -58,7 +82,6 @@ export class LoadFile extends Component {
     }
   }
 
-
   constructor(props: any) {
     super(props);
     this.fileInputRef = React.createRef();
@@ -66,7 +89,6 @@ export class LoadFile extends Component {
       json: this.json
     }
   }
-
 
   render() {
     return (
@@ -92,11 +114,30 @@ export class LoadFile extends Component {
               </div>
               <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+
+
           </div>
           <div className="col-8">
             <h2 className="text-white">File preview</h2>
             {/*@ts-ignore*/}
             <JSONTree data={this.props.json || {}} theme={this.theme}  />
+             {/*<div><pre>{JSON.stringify(this.props.json || {}, null, 2) }</pre></div>;*/}
+          </div>
+        </div>
+        <div className="row">
+          <div className={"mt-5 col-4"}>
+            <h3 className={"text-white"}>Search needed info</h3>
+            <form>
+
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputName1" aria-describedby="nameHelp"
+                       placeholder="Enter name"/>
+              </div>
+
+
+
+              <button type="submit" className="btn btn-primary">Submit</button>
+            </form>
           </div>
         </div>
       </div>
