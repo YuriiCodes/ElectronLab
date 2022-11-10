@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import { JSONTree } from 'react-json-tree';
 
 
-
 type GroupInfo = {
   name: string,
   department: string,
@@ -25,6 +24,9 @@ interface Props{
   isJsonLoaded: boolean
 }
 interface State{
+  nameSearch: string,
+  jsonSearchRes: any,
+  departmentSearch: string,
 }
 
 export class LoadFile extends Component<Props, State>  {
@@ -49,44 +51,39 @@ export class LoadFile extends Component<Props, State>  {
   base0E: '#4C963E',
   base0F: '#3E965B'
 };
-  private  json  = {
-    scientistpersonnel: {
-      group: [
-        {
-          name: 'Linear Algrebra',
-          faculty: { department: 'Mathematics', branch: 'Mathematical Analysis' },
-          chair: 'Professor, Doctor of Technical Sciences, Professor of the Department of Computer Science and Engineering',
-          day: 'Wednesday',
-          time: '18:00',
-          headman: 'Alexander the great',
-          orientation: {
-            course: 'Linear algebra basics',
-            subject: 'Computer Science'
-          },
-          leader: 'Kozlovsky Alexander'
-        },
-        {
-          name: 'Calculus',
-          faculty: {
-            department: 'Computer Science',
-            branch: 'Software engineering'
-          },
-          chair: 'Professor, Doctor of Multivariate Analysis and complex functions',
-          day: 'Monday',
-          time: '12:40',
-          headman: 'John Doe',
-          orientation: { course: 'Calculus 1', subject: 'Computer Science' },
-          leader: 'Steve Green'
-        }
-      ]
-    }
+
+
+  private handleJsonSearch = (fieldName: keyof GroupInfo) => {
+    // iterate over the json and find the needed info, search can be performed by name, department, branch, chair, day, time, headman, course, subject, leader
+    // Then set the  resulting object to jsonSearchRes
+    let res = {}
+    const searchResult = this.props.json.scientistpersonnel.group.filter(group => group[fieldName] === this.state.nameSearch);
+    this.setState({jsonSearchRes: searchResult})
+
   }
+  private searchGroupsByKeyValue(key: keyof GroupInfo, value: string) {
+    let result:any[] = [];
+    // perform substring search for every group in data.scientistpersonnel.group.
+    // If the  group[key] === "Linear Algrebra" and value === "Linear" then it will return true
+    this.props.json.scientistpersonnel.group.forEach(group => {
+      if (group[key].toLowerCase().includes(value.toLowerCase())) {
+        result.push(group);
+      }
+    });
+    // typescript thinkgs that jsonSearchRes is readonly, so we need to supress it
+    // @ts-ignore
+    this.state.jsonSearchRes = result;
+  }
+
+
 
   constructor(props: any) {
     super(props);
     this.fileInputRef = React.createRef();
     this.state = {
-      json: this.json
+      nameSearch: '',
+      departmentSearch: '',
+      jsonSearchRes: {},
     }
   }
 
@@ -121,23 +118,35 @@ export class LoadFile extends Component<Props, State>  {
             <h2 className="text-white">File preview</h2>
             {/*@ts-ignore*/}
             <JSONTree data={this.props.json || {}} theme={this.theme}  />
-             {/*<div><pre>{JSON.stringify(this.props.json || {}, null, 2) }</pre></div>;*/}
+
           </div>
         </div>
         <div className="row">
           <div className={"mt-5 col-4"}>
             <h3 className={"text-white"}>Search needed info</h3>
-            <form>
-
+            <form onSubmit={e => {
+              e.preventDefault();
+            }}>
               <div className="form-group">
                 <input type="text" className="form-control" id="exampleInputName1" aria-describedby="nameHelp"
-                       placeholder="Enter name"/>
+                       placeholder="Enter name" value={this.state.nameSearch} onChange={e => {
+                  this.setState({nameSearch: e.target.value})
+                  this.searchGroupsByKeyValue('name' , this.state.nameSearch);
+                }}/>
               </div>
-
-
-
+              <div className="form-group">
+                <input type="text" className="form-control" id="exampleInputDepartemtn1" aria-describedby="departmentHelp"
+                       placeholder="Enter department" value={this.state.departmentSearch} onChange={e => {
+                  this.setState({departmentSearch: e.target.value})
+                  this.searchGroupsByKeyValue('department' , this.state.departmentSearch);
+                }}/>
+              </div>
               <button type="submit" className="btn btn-primary">Submit</button>
             </form>
+          </div>
+          <div className={"col-8"}>
+            <h3 className={"text-white"}>Search results</h3>
+            <pre  className={"text-white"}>{JSON.stringify( this.state.jsonSearchRes || "No results yet", null, 2) }</pre>
           </div>
         </div>
       </div>
