@@ -37,6 +37,7 @@ interface State {
   subjectSearch: string,
   leaderSearch: string,
   jsonSearchRes: any,
+  isJsonToExportValid: boolean,
 }
 
 export class LoadFile extends Component<Props, State> {
@@ -74,6 +75,7 @@ export class LoadFile extends Component<Props, State> {
         }
       });
     } catch (e) {
+      this.state.isJsonToExportValid = false;
       window.electron.ipcRenderer.sendMessage('show-error-dialog', ["Error while searching. Please check your file"]);
     }
     // typescript things that jsonSearchRes is readonly, so we need to suppress it
@@ -82,8 +84,8 @@ export class LoadFile extends Component<Props, State> {
   }
 
   openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    console.log("STATE")
-    console.log(this.state.jsonSearchRes);
+
+
     window.electron.ipcRenderer.sendMessage('export-to-html', [this.state.jsonSearchRes]);
   }
 
@@ -103,6 +105,7 @@ export class LoadFile extends Component<Props, State> {
       subjectSearch: '',
       leaderSearch: '',
       jsonSearchRes: {},
+      isJsonToExportValid: true,
     }
 
   }
@@ -115,7 +118,7 @@ export class LoadFile extends Component<Props, State> {
             <h1 className="text-white">File load</h1>
             <form onSubmit={(e) => {
               e.preventDefault();
-              console.log(e.target);
+
               // @ts-ignore
               let selectedFilePath = "";
               try {
@@ -125,7 +128,8 @@ export class LoadFile extends Component<Props, State> {
                 return;
               }
 
-              console.log(selectedFilePath)
+
+
               window.electron.ipcRenderer.sendMessage('xml-uploaded', [selectedFilePath]);
               alert(
                 // @ts-ignore
@@ -243,7 +247,7 @@ export class LoadFile extends Component<Props, State> {
 
             <div className={"d-flex justify-content-between"}>
               <h3 className={"text-white"}>Search results</h3>
-              <button className="btn btn-secondary" onClick={this.openSaveDialog}>Export to HTML</button>
+              <button className="btn btn-secondary" disabled={!this.state.isJsonToExportValid} onClick={this.openSaveDialog}>Export to HTML</button>
             </div>
             <pre className={"text-white"}>{JSON.stringify(this.state.jsonSearchRes || "No results yet", null, 2)}</pre>
           </div>

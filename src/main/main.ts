@@ -39,15 +39,10 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.on('show-error-dialog', (event, arg) => {
-  console.log(inspect(arg, {showHidden: false, depth: null}));
-  console.log(arg[0])
   dialog.showErrorBox("Error", arg[0])
 });
 
 ipcMain.on('show-success-dialog', (event, arg) => {
-  console.log(inspect(arg, {showHidden: false, depth: null}));
-  console.log(arg[0])
-
   if (mainWindow === null) {
     throw new Error('"mainWindow" is not defined');
   }
@@ -64,14 +59,11 @@ ipcMain.on('show-success-dialog', (event, arg) => {
 
 ipcMain.on('xml-uploaded', async (event, arg) => {
   const msgTemplate = (file: string) => `xml file uploaded: ${file}`;
-  console.log(msgTemplate(arg));
   let data;
   try {
     data = await fs.readFile(arg[0], {encoding: 'utf8'});
-    console.log(data);
   } catch (err) {
     dialog.showErrorBox("Error", "Error reading file");
-    console.log(err);
   }
   let parser: XmlParserClass = XmlParserClass.getInstance();
 
@@ -107,9 +99,8 @@ async function writeToFile(path: string, data: any) {
         buttons: ["OK"]
       }
     )
-    console.log("File written successfully");
   } catch (err) {
-    console.log(err);
+    dialog.showErrorBox("Error", "Error writing file");
   }
 }
 
@@ -168,8 +159,6 @@ let ejsStr = `<!DOCTYPE html>
                           </body>
                         </html>`
 ipcMain.on('export-to-html', async (event, arg) => {
-  console.log(`export-to-html`);
-
   if (mainWindow === null) {
     throw new Error('"mainWindow" is not defined');
   }
@@ -183,7 +172,7 @@ ipcMain.on('export-to-html', async (event, arg) => {
     let rendered = ejs.render(ejsStr, {groups: arg[0]}, {});
     writeToFile(filePath, rendered);
   }).catch(err => {
-    console.log(err)
+    dialog.showErrorBox("Error", "Error opening file");
   })
 });
 
