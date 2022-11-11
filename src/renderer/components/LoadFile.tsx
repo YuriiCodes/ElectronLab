@@ -67,20 +67,26 @@ export class LoadFile extends Component<Props, State> {
     let result: any[] = [];
     // perform substring search for every group in data.scientistpersonnel.group.
     // If the  group[key] === "Linear Algebra" and value === "Linear" then it will return true
-    this.props.json.scientistpersonnel.group.forEach(group => {
-      if (group[key].toLowerCase().includes(value.toLowerCase())) {
-        result.push(group);
-      }
-    });
+    try {
+      this.props.json.scientistpersonnel.group.forEach(group => {
+        if (group[key].toLowerCase().includes(value.toLowerCase())) {
+          result.push(group);
+        }
+      });
+    } catch (e) {
+      window.electron.ipcRenderer.sendMessage('show-error-dialog', ["Error while searching. Please check your file"]);
+    }
     // typescript things that jsonSearchRes is readonly, so we need to suppress it
     // @ts-ignore
     this.state.jsonSearchRes = result;
   }
-   openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>)  =>{
+
+  openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     console.log("STATE")
     console.log(this.state.jsonSearchRes);
     window.electron.ipcRenderer.sendMessage('export-to-html', [this.state.jsonSearchRes]);
   }
+
   constructor(props: any) {
     super(props);
     this.fileInputRef = React.createRef();
