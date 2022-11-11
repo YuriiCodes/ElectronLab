@@ -66,15 +66,14 @@ export class LoadFile extends Component<Props, State> {
   private searchGroupsByKeyValue(key: keyof GroupInfo, value: string) {
     let result: any[] = [];
     // perform substring search for every group in data.scientistpersonnel.group.
-    // If the  group[key] === "Linear Algrebra" and value === "Linear" then it will return true
+    // If the  group[key] === "Linear Algebra" and value === "Linear" then it will return true
     this.props.json.scientistpersonnel.group.forEach(group => {
       if (group[key].toLowerCase().includes(value.toLowerCase())) {
         result.push(group);
       }
     });
-    // typescript thinkgs that jsonSearchRes is readonly, so we need to supress it
+    // typescript things that jsonSearchRes is readonly, so we need to suppress it
     // @ts-ignore
-
     this.state.jsonSearchRes = result;
   }
    openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>)  =>{
@@ -153,7 +152,7 @@ export class LoadFile extends Component<Props, State> {
                 }}/>
               </div>
               <div className="form-group">
-                <input type="text" className="form-control" id="exampleInputDepartemtn1"
+                <input type="text" className="form-control" id="exampleInputDepartment1"
                        aria-describedby="departmentHelp"
                        placeholder="Enter department" value={this.state.departmentSearch} onChange={e => {
                   this.setState({departmentSearch: e.target.value})
