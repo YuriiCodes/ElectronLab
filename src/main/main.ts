@@ -41,8 +41,26 @@ ipcMain.on('ipc-example', async (event, arg) => {
 ipcMain.on('show-error-dialog', (event, arg) => {
   console.log(inspect(arg, {showHidden: false, depth: null}));
   console.log(arg[0])
-  dialog.showErrorBox("Error",arg[0])
+  dialog.showErrorBox("Error", arg[0])
 });
+
+ipcMain.on('show-success-dialog', (event, arg) => {
+  console.log(inspect(arg, {showHidden: false, depth: null}));
+  console.log(arg[0])
+
+  if (mainWindow === null) {
+    throw new Error('"mainWindow" is not defined');
+  }
+
+  dialog.showMessageBoxSync(mainWindow, {
+      type: "info",
+      title: "Success",
+      message: arg[0],
+      buttons: ["OK"]
+    }
+  )
+});
+
 
 ipcMain.on('xml-uploaded', async (event, arg) => {
   const msgTemplate = (file: string) => `xml file uploaded: ${file}`;
@@ -52,6 +70,7 @@ ipcMain.on('xml-uploaded', async (event, arg) => {
     data = await fs.readFile(arg[0], {encoding: 'utf8'});
     console.log(data);
   } catch (err) {
+    dialog.showErrorBox("Error", "Error reading file");
     console.log(err);
   }
   let parser: XmlParserClass = XmlParserClass.getInstance();
@@ -65,14 +84,29 @@ ipcMain.on('xml-uploaded', async (event, arg) => {
   } else {
     console.log('Singleton failed, variables contain different instances.');
   }*/
-  let jsonObj = parser.parse(data);
-  console.log(util.inspect(jsonObj, {showHidden: false, depth: null, colors: true}))
+  let jsonObj = {};
+  try {
+    jsonObj = parser.parse(data);
+  } catch (err) {
+    dialog.showErrorBox("Error", "Error parsing file");
+  }
   event.sender.send("json-ready", jsonObj);
 });
 
 async function writeToFile(path: string, data: any) {
   try {
     await fs.writeFile(path, data);
+
+    if (mainWindow === null) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    dialog.showMessageBoxSync(mainWindow, {
+        type: "info",
+        title: "Success",
+        message: "File written successfully",
+        buttons: ["OK"]
+      }
+    )
     console.log("File written successfully");
   } catch (err) {
     console.log(err);
@@ -148,7 +182,6 @@ ipcMain.on('export-to-html', async (event, arg) => {
     let filePath = result.filePaths[0];
     let rendered = ejs.render(ejsStr, {groups: arg[0]}, {});
     writeToFile(filePath, rendered);
-
   }).catch(err => {
     console.log(err)
   })
