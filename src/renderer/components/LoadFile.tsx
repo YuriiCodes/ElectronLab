@@ -111,7 +111,15 @@ export class LoadFile extends Component<Props, State> {
               e.preventDefault();
               console.log(e.target);
               // @ts-ignore
-              const selectedFilePath = this.fileInputRef.current.files[0].path;
+              let selectedFilePath = "";
+              try {
+                selectedFilePath = this.fileInputRef.current.files[0].path;
+              } catch (err) {
+                window.electron.ipcRenderer.sendMessage("show-error-dialog", ["Please select a file"]);
+                return;
+              }
+
+              console.log(selectedFilePath)
               window.electron.ipcRenderer.sendMessage('xml-uploaded', [selectedFilePath]);
               alert(
                 // @ts-ignore

@@ -15,7 +15,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import {resolveHtmlPath} from './util';
 import {XmlParserClass} from "./xmlParserClass";
-import util from "util";
+import util, {inspect} from "util";
 import ejs from 'ejs';
 
 
@@ -36,6 +36,12 @@ ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('show-error-dialog', (event, arg) => {
+  console.log(inspect(arg, {showHidden: false, depth: null}));
+  console.log(arg[0])
+  dialog.showErrorBox("Error",arg[0])
 });
 
 ipcMain.on('xml-uploaded', async (event, arg) => {
