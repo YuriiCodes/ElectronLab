@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { JSONTree } from 'react-json-tree';
+import {JSONTree} from 'react-json-tree';
 
 
 type GroupInfo = {
@@ -19,11 +19,13 @@ type JsonTreeProps = {
     group: GroupInfo[]
   }
 }
-interface Props{
+
+interface Props {
   json: JsonTreeProps
   isJsonLoaded: boolean
 }
-interface State{
+
+interface State {
   nameSearch: string,
   departmentSearch: string,
   branchSearch: string,
@@ -35,35 +37,34 @@ interface State{
   subjectSearch: string,
   leaderSearch: string,
   jsonSearchRes: any,
-
 }
 
-export class LoadFile extends Component<Props, State>  {
+export class LoadFile extends Component<Props, State> {
   private readonly fileInputRef: React.RefObject<unknown>;
-  private readonly  theme  = {
-  scheme: 'apathy',
-  author: 'jannik siebert (https://github.com/janniks)',
-  base00: '#031A16',
-  base01: '#0B342D',
-  base02: '#184E45',
-  base03: '#2B685E',
-  base04: '#5F9C92',
-  base05: '#81B5AC',
-  base06: '#A7CEC8',
-  base07: '#D2E7E4',
-  base08: '#3E9688',
-  base09: '#3E7996',
-  base0A: '#3E4C96',
-  base0B: '#883E96',
-  base0C: '#963E4C',
-  base0D: '#96883E',
-  base0E: '#4C963E',
-  base0F: '#3E965B'
-};
+  private readonly theme = {
+    scheme: 'apathy',
+    author: 'jannik siebert (https://github.com/janniks)',
+    base00: '#031A16',
+    base01: '#0B342D',
+    base02: '#184E45',
+    base03: '#2B685E',
+    base04: '#5F9C92',
+    base05: '#81B5AC',
+    base06: '#A7CEC8',
+    base07: '#D2E7E4',
+    base08: '#3E9688',
+    base09: '#3E7996',
+    base0A: '#3E4C96',
+    base0B: '#883E96',
+    base0C: '#963E4C',
+    base0D: '#96883E',
+    base0E: '#4C963E',
+    base0F: '#3E965B'
+  };
 
 
   private searchGroupsByKeyValue(key: keyof GroupInfo, value: string) {
-    let result:any[] = [];
+    let result: any[] = [];
     // perform substring search for every group in data.scientistpersonnel.group.
     // If the  group[key] === "Linear Algrebra" and value === "Linear" then it will return true
     this.props.json.scientistpersonnel.group.forEach(group => {
@@ -73,14 +74,18 @@ export class LoadFile extends Component<Props, State>  {
     });
     // typescript thinkgs that jsonSearchRes is readonly, so we need to supress it
     // @ts-ignore
+
     this.state.jsonSearchRes = result;
   }
-
-
-
+   openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>)  =>{
+    console.log("STATE")
+    console.log(this.state.jsonSearchRes);
+    window.electron.ipcRenderer.sendMessage('export-to-html', [this.state.jsonSearchRes]);
+  }
   constructor(props: any) {
     super(props);
     this.fileInputRef = React.createRef();
+
     this.state = {
       nameSearch: '',
       departmentSearch: '',
@@ -94,6 +99,7 @@ export class LoadFile extends Component<Props, State>  {
       leaderSearch: '',
       jsonSearchRes: {},
     }
+
   }
 
   render() {
@@ -124,13 +130,16 @@ export class LoadFile extends Component<Props, State>  {
 
           </div>
           <div className="col-8">
-            <h2 className="text-white">File preview</h2>
+            <div className={"d-flex justify-content-between"}>
+              <h2 className="text-white">File preview</h2>
+            </div>
             {/*@ts-ignore*/}
-            <JSONTree data={this.props.json || {}} theme={this.theme}  />
+            <JSONTree data={this.props.json || {}} theme={this.theme}/>
 
           </div>
         </div>
-        <div className="row">
+
+        {this.props.isJsonLoaded ? <div className="row">
           <div className={"mt-5 col-4"}>
             <h3 className={"text-white"}>Search needed info</h3>
             <form onSubmit={e => {
@@ -140,14 +149,15 @@ export class LoadFile extends Component<Props, State>  {
                 <input type="text" className="form-control" id="exampleInputName1" aria-describedby="nameHelp"
                        placeholder="Enter name" value={this.state.nameSearch} onChange={e => {
                   this.setState({nameSearch: e.target.value})
-                  this.searchGroupsByKeyValue('name' , this.state.nameSearch);
+                  this.searchGroupsByKeyValue('name', this.state.nameSearch);
                 }}/>
               </div>
               <div className="form-group">
-                <input type="text" className="form-control" id="exampleInputDepartemtn1" aria-describedby="departmentHelp"
+                <input type="text" className="form-control" id="exampleInputDepartemtn1"
+                       aria-describedby="departmentHelp"
                        placeholder="Enter department" value={this.state.departmentSearch} onChange={e => {
                   this.setState({departmentSearch: e.target.value})
-                  this.searchGroupsByKeyValue('department' , this.state.departmentSearch);
+                  this.searchGroupsByKeyValue('department', this.state.departmentSearch);
                 }}/>
               </div>
 
@@ -155,14 +165,14 @@ export class LoadFile extends Component<Props, State>  {
                 <input type="text" className="form-control" id="exampleInputBranch" aria-describedby="branchHelp"
                        placeholder="Enter branch" value={this.state.branchSearch} onChange={e => {
                   this.setState({branchSearch: e.target.value})
-                  this.searchGroupsByKeyValue('branch' , this.state.branchSearch);
+                  this.searchGroupsByKeyValue('branch', this.state.branchSearch);
                 }}/>
               </div>
               <div className="form-group">
                 <input type="text" className="form-control" id="exampleInputChair" aria-describedby="chairHelp"
                        placeholder="Enter chair" value={this.state.chairSearch} onChange={e => {
                   this.setState({chairSearch: e.target.value})
-                  this.searchGroupsByKeyValue('chair' , this.state.chairSearch);
+                  this.searchGroupsByKeyValue('chair', this.state.chairSearch);
                 }}/>
               </div>
 
@@ -170,7 +180,7 @@ export class LoadFile extends Component<Props, State>  {
                 <input type="text" className="form-control" id="exampleInputDay" aria-describedby="dayHelp"
                        placeholder="Enter day" value={this.state.daySearch} onChange={e => {
                   this.setState({daySearch: e.target.value})
-                  this.searchGroupsByKeyValue('day' , this.state.daySearch);
+                  this.searchGroupsByKeyValue('day', this.state.daySearch);
                 }}/>
               </div>
 
@@ -216,11 +226,15 @@ export class LoadFile extends Component<Props, State>  {
               </div>
             </form>
           </div>
-          <div className={"col-8"}>
-            <h3 className={"text-white"}>Search results</h3>
-            <pre  className={"text-white"}>{JSON.stringify( this.state.jsonSearchRes || "No results yet", null, 2) }</pre>
+          <div className={"col-8 mt-5 "}>
+
+            <div className={"d-flex justify-content-between"}>
+              <h3 className={"text-white"}>Search results</h3>
+              <button className="btn btn-secondary" onClick={this.openSaveDialog}>Export to HTML</button>
+            </div>
+            <pre className={"text-white"}>{JSON.stringify(this.state.jsonSearchRes || "No results yet", null, 2)}</pre>
           </div>
-        </div>
+        </div> : null}
       </div>
     )
   }

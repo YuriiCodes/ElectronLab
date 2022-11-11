@@ -20,13 +20,14 @@ const StartPage = () => {
 
 export default function App() {
   const [json, setJson] = useState({})
+const [isJsonLoaded, setIsJsonLoaded] = useState(false)
   // Get parsed JSON from the main process
   window.electron.ipcRenderer.on('json-ready', (args) => {
-    debugger;
     // @ts-ignore
     console.log("received json");
     // @ts-ignore
     setJson(args);
+    setIsJsonLoaded(true);
   });
 
   return (
@@ -34,7 +35,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<StartPage/>}/>
         {/*// @ts-ignore*/}
-        <Route path="/loadFile" element={<LoadFile json={json}/>}/>
+        <Route path="/loadFile" element={<LoadFile isJsonLoaded={isJsonLoaded} json={json}/>}/>
       </Routes>
     </Router>
   );

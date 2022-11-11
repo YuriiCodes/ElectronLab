@@ -9,13 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import {app, BrowserWindow, shell, ipcMain} from 'electron';
+import {app, BrowserWindow, shell, ipcMain, dialog} from 'electron';
 import {autoUpdater} from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import {resolveHtmlPath} from './util';
 import {XmlParserClass} from "./xmlParserClass";
 import util from "util";
+import ejs from 'ejs';
 
 
 const fs = require('fs/promises');
@@ -42,12 +43,12 @@ ipcMain.on('xml-uploaded', async (event, arg) => {
   console.log(msgTemplate(arg));
   let data;
   try {
-     data = await fs.readFile(arg[0], {encoding: 'utf8'});
+    data = await fs.readFile(arg[0], {encoding: 'utf8'});
     console.log(data);
   } catch (err) {
     console.log(err);
   }
-  let parser:XmlParserClass = XmlParserClass.getInstance();
+  let parser: XmlParserClass = XmlParserClass.getInstance();
 
   // Uncode the code below to perform singleton test.
   // It will output "Singleton works, both variables contain the same instance".
@@ -61,6 +62,90 @@ ipcMain.on('xml-uploaded', async (event, arg) => {
   let jsonObj = parser.parse(data);
   console.log(util.inspect(jsonObj, {showHidden: false, depth: null, colors: true}))
   event.sender.send("json-ready", jsonObj);
+});
+
+async function writeToFile(path: string, data: any) {
+  try {
+    await fs.writeFile(path, data);
+    console.log("File written successfully");
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+let ejsStr = `<!DOCTYPE html>
+                        <html>
+                          <head>
+                            <meta charset="utf-8">
+                            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                            <title>Exported HTML</title>
+                            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/fontawesome.min.css">
+                            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+                            <!-- Leave those next 4 lines if you care about users using IE8 -->
+                            <!--[if lt IE 9]>
+                              <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+                              <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+                            <![endif]-->
+                          </head>
+                          <body>
+                            <table class="table">
+                                  <thead>
+                                    <tr>
+                                      <th scope="col">Name</th>
+                                      <th scope="col">Department</th>
+                                      <th scope="col">Branch</th>
+                                      <th scope="col">Chair</th>
+                                      <th scope="col">Day</th>
+                                      <th scope="col">Time</th>
+                                      <th scope="col">Headman</th>
+                                      <th scope="col">Course</th>
+                                      <th scope="col">subject</th>
+                                      <th scope="col">leader</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <% groups.forEach(group => {%>
+                                      <tr>
+                                        <td><%= group.name %></td>
+                                        <td><%= group.department %></td>
+                                        <td><%= group.branch %></td>
+                                        <td><%= group.chair %></td>
+                                        <td><%= group.day %></td>
+                                        <td><%= group.time %></td>
+                                        <td><%= group.headman %></td>
+                                        <td><%= group.course %></td>
+                                        <td><%= group.subject %></td>
+                                        <td><%= group.leader %></td>
+                                      </tr>
+                                    <% }); %>
+                                  </tbody>
+                                </table>
+                            <!-- Including Bootstrap JS (with its jQuery dependency) so that dynamic components work -->
+                            <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+                            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+                          </body>
+                        </html>`
+ipcMain.on('export-to-html', async (event, arg) => {
+  console.log(`export-to-html`);
+
+  if (mainWindow === null) {
+    throw new Error('"mainWindow" is not defined');
+  }
+  dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile']
+  }).then(result => {
+    if (result.canceled) {
+      return;
+    }
+    let filePath = result.filePaths[0];
+    let rendered = ejs.render(ejsStr, {groups: arg[0]}, {});
+    writeToFile(filePath, rendered);
+
+  }).catch(err => {
+    console.log(err)
+  })
 });
 
 if (process.env.NODE_ENV === 'production') {
