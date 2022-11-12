@@ -119,9 +119,9 @@ export class LoadFile extends Component<Props, State> {
             <form onSubmit={(e) => {
               e.preventDefault();
 
-              // @ts-ignore
               let selectedFilePath = "";
               try {
+                // @ts-ignore
                 selectedFilePath = this.fileInputRef.current.files[0].path;
               } catch (err) {
                 window.electron.ipcRenderer.sendMessage("show-error-dialog", ["Please select a file"]);
