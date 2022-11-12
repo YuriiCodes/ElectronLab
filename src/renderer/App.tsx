@@ -15,7 +15,6 @@ const StartPage = () => {
         <Link to="/loadFile" className="text-white text-decoration-none">Load XML</Link>
       </button>
       <h3 className={"text-white mt-4"}>Example of valid XML input</h3>
-      <p>
         <pre className={"text-white"}>
           {`
          <scientistpersonnel>
@@ -35,8 +34,6 @@ const StartPage = () => {
         </scientistpersonnel>
           `}
         </pre>
-
-      </p>
     </div>
   );
 };

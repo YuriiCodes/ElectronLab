@@ -84,8 +84,6 @@ export class LoadFile extends Component<Props, State> {
   }
 
   openSaveDialog = (_e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-
-
     window.electron.ipcRenderer.sendMessage('export-to-html', [this.state.jsonSearchRes]);
   }
 
